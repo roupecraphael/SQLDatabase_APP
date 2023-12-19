@@ -12,10 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".SecondActivity" >
+        <!-- Button to return to first actifity -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/returnbutton"
+            android:text="Add additional provisions"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/LebensmittelListe"
+            app:layout_constraintBottom_toBottomOf="parent"  />
         <!-- recyclerView to display what the is in the database -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/LebensmittelListe"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/returnbutton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

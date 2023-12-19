@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.temperatureexample
 // import all necessary external libraries here -------------------------------------------------------------------------------//
+// import all necessary internal classes here-------------------------------------------------------------------------------//
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,12 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import at.ac.fhcampuswien.temperatureexample.R
-// import all necessary internal classes here-------------------------------------------------------------------------------//
 import at.ac.fhcampuswien.temperatureexample.data.LebensmittelData
 import at.ac.fhcampuswien.temperatureexample.data.LebensmittelDatabase
-import at.ac.fhcampuswien.temperatureexample.databinding.ActivitySecondBinding
 import at.ac.fhcampuswien.temperatureexample.databinding.ActivityMainBinding
+import at.ac.fhcampuswien.temperatureexample.databinding.ActivitySecondBinding
+
 // this is the main activity class that is called when the app is started -----------------------------------------------------//
 class MainActivity : AppCompatActivity() {
     // Private variables are declared here ------------------------------------------------------------------------------------//
@@ -77,6 +77,17 @@ class SecondActivity : AppCompatActivity() {
         val adapter = LebensmittelAdapter(dao.getAllLocations())
         view.adapter = adapter
         view.layoutManager = LinearLayoutManager(this)
+        val goBacktoActifity: Button
+        goBacktoActifity =
+            findViewById<View>(R.id.returnbutton) as Button //find the button by its assigned id
+        goBacktoActifity.setOnClickListener { // TODO Auto-generated method stub
+            val myIntent = Intent(
+                this,
+                MainActivity::class.java
+            )
+            startActivity(myIntent)
+        }
+
     }
 }
 // the following class Viewholder is used to bind the R.id.lebensmittelid, R.id.gewichtid and R.id.kohlenhydrateid to  --------//
@@ -85,6 +96,7 @@ class LebensmittelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     val lebensmittelName: TextView = itemView.findViewById(R.id.lebensmittelid)
     val gewicht: TextView = itemView.findViewById(R.id.gewichtid)
     val kohlenhydrate: TextView = itemView.findViewById(R.id.kohlenhydrateid)
+    val deleteButton: Button = itemView.findViewById(R.id.delete)
 }
 // the following class is used to create an adapter that is used by the ViewHolder to update the display of the data ----------//
 // from the database in the second activity -----------------------------------------------------------------------------------//
@@ -100,8 +112,29 @@ class LebensmittelAdapter(private val lebensmittelList: List<LebensmittelData>) 
     override fun onBindViewHolder(holder: LebensmittelViewHolder, position: Int) {
         val lebensmitteln = lebensmittelList[position]
         holder.lebensmittelName.text = lebensmitteln.lebensmittel
-        holder.gewicht.text = lebensmitteln.gewicht.toString()
-        holder.kohlenhydrate.text  = lebensmitteln.kohlenhydrate.toString()
+        holder.gewicht.text = lebensmitteln.gewichtText
+        holder.kohlenhydrate.text  = lebensmitteln.kohlenhydrateText
+        holder.deleteButton.setOnClickListener {
+            if (lebensmittelList.size > 0) {
+                val db = LebensmittelDatabase.getInstance(holder.itemView.context)
+                val dao = db.temperatureDao
+                dao.delete(lebensmitteln.dataId)
+            }
+        }
+        // the following lines are used to hide the data that is marked as "donotdelete" --------------------------------------//
+        if (lebensmitteln.lebensmittel == "donotdelete") {
+            holder.itemView.visibility = View.GONE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+        }
+        // any other data is displayed normally --------------------------------------------------------------------------------//
+        else
+        if (lebensmitteln.lebensmittel != "donotdelete") {
+            holder.itemView.visibility = View.VISIBLE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
     }
     // the following function is used to get the number of items in the database ----------------------------------------------//
     override fun getItemCount() = lebensmittelList.size

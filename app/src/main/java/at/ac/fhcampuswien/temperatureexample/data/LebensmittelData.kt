@@ -17,12 +17,12 @@ data class LebensmittelData(
 )
 // the following lines are used to create a val that uses the data from the database to create a form text that can be displayed--//
 {
-    val celsiusText: String
+    val gewichtText: String
         get() {
-            return "$gewicht KG."
+            return "$gewicht g"
         }
     val kohlenhydrateText: String
         get() {
-            return "$kohlenhydrate kcal."
+            return "$kohlenhydrate BE"
         }
 }
